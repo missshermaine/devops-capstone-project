@@ -6,12 +6,29 @@ and SQL database
 """
 import sys
 from flask import Flask
+from flask_talisman import Talisman
+from flask_cors import CORS
 from service import config
 from service.common import log_handlers
 
 # Create Flask application
 app = Flask(__name__)
 app.config.from_object(config)
+
+# Keep HTTP available for the lab and configure security headers.
+talisman = Talisman(
+    app,
+    force_https=False,
+    content_security_policy={"default-src": "'self'"},
+)
+cors = CORS(
+    app,
+    origins="*",
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type"],
+    expose_headers=["Location"],
+    supports_credentials=False,
+)
 
 # Import the routes After the Flask app is created
 # pylint: disable=wrong-import-position, cyclic-import, wrong-import-order
